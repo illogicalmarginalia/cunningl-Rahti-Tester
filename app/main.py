@@ -21,7 +21,7 @@ app.add_middleware(
 
 @app.get("/")
 def read_root():
-    return { "msg": "Now for something entirely different", "v": "0.2" }
+    return {"msg": "Now for something entirely different", "v": "0.2" }
 
 @app.get("/api/ip")
 def read_root(request: Request):
@@ -35,3 +35,10 @@ def read_root(request: Request):
 @app.get("/items/{id}")
 def read_item(item_id: int, q: str = None):
     return {"id": id, "q": q}
+
+@app.get("/api/rooms")
+def read_root(request: Request):
+    hotelRooms = [{"roomNumber": 14, "bedSize" : "Queen", "TV" : "Yes" }, 
+                  {"roomNumber": 7, "bedSize" : "Twin", "TV" : "No"},
+                  {"roomNumber": 17, "bedSize" : "King", "TV" : "Yes" }]
+    return {"hotelRooms": hotelRooms}
