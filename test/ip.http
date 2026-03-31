@@ -1,0 +1,6 @@
+@apiURL = https://cunningl-rahti-tester-web-communication-and-databases.2.rahtiapp.fi
+GET {{apiURL}}/api/ip
+
+###
+
+GET {{apiURL}}

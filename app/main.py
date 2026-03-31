@@ -7,7 +7,7 @@ origins = [
    # "https://cunningl-rahti-tester-web-communication-and-databases.2.rahtiapp.fi",
    # "http://localhost",
    # "http://localhost:8080",
-   # "http://localhost:5050",
+   # "http://localhost:5500",
    "*", #change in production
 ]
 

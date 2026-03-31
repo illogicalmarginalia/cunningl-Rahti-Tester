@@ -1,0 +1,39 @@
+@prodURL = https://fw-teaching.fi/demo/wdbocms/api/v1/products/
+
+GET {{prodURL}}
+
+###
+#get one product
+GET {{prodURL}}/1002
+
+###
+#create new product
+POST {{prodURL}}
+Content-Type: application/json
+
+{
+    "name": "Coat",
+    "price": 45
+}
+
+### change a field in a single product
+PATCH {{prodURL}}/1002
+Content-Type:  application/json
+
+{
+    "price": 10
+}
+
+### update all data of a single product
+
+PUT {{prodURL}}/1001
+Content-Type:  application/json
+
+{
+    "name": "Shorts",
+    "price": 5
+}
+
+### Delete a product
+
+DELETE {{prodURL}}/1003
