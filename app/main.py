@@ -38,7 +38,7 @@ def read_item(item_id: int, q: str = None):
 
 @app.get("/api/rooms")
 def read_root(request: Request):
-    hotelRooms = [{"roomNumber": 14, "bedSize" : "Queen", "TV" : "Yes", "Bookable":"Yes" }, 
+    hotelRooms = [{"roomNumber": 14, "bedSize" : "Queen", "TV" : "Yes", "Bookable":"Yes"}, 
                   {"roomNumber": 7, "bedSize" : "Twin", "TV" : "No", "Bookable":"Yes"},
                   {"roomNumber": 17, "bedSize" : "King", "TV" : "Yes", "Bookable":"No"}]
     return {"hotelRooms": hotelRooms}
