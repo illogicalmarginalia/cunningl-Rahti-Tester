@@ -23,10 +23,14 @@ app.add_middleware(
 def read_root():
     return { "msg": "Now for something entirely different", "v": "0.2" }
 
-@app.get("/api/ip", response_class=HTMLResponse)
+@app.get("/api/ip")
 def read_root(request: Request):
-    client_host = request.client.host
-    return f"<h1> ip: {client_host} </h1>"
+    return {"ip": request.client.host}
+
+#@app.get("/api/ip", response_class=HTMLResponse)
+#def read_root(request: Request):
+#    client_host = request.client.host
+#    return f"<h1> ip: {client_host} </h1>"
 
 @app.get("/items/{id}")
 def read_item(item_id: int, q: str = None):
