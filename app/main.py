@@ -1,7 +1,7 @@
 from fastapi import FastAPI, Request
 from fastapi.responses import HTMLResponse
 from fastapi.middleware.cors import CORSMiddleware
-from app.db import get_conn
+from app.db import get_conn, create_schema
 
 app = FastAPI()
 
@@ -20,6 +20,9 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+create_schema()
+
 
 @app.get("/")
 def read_root():
