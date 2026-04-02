@@ -1,6 +1,8 @@
 from fastapi import FastAPI, Request
 from fastapi.responses import HTMLResponse
 from fastapi.middleware.cors import CORSMiddleware
+from app.db import get_conn
+
 app = FastAPI()
 
 origins = [
@@ -21,7 +23,11 @@ app.add_middleware(
 
 @app.get("/")
 def read_root():
-    return {"msg": "Now for something entirely different", "v": "0.2" }
+    with get_conn() as conn, conn.cursor() as cur:
+        cur.execute("SELECT 'hello postgres'")
+        result = cur.fetchone()
+
+    return {"msg": "Now for something entirely different", "dbstatus": result }
 
 @app.get("/api/ip")
 def read_root(request: Request):
