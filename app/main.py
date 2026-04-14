@@ -40,6 +40,19 @@ def read_root(request: Request):
 #def read_root(request: Request):
 #    client_host = request.client.host
 #    return f"<h1> ip: {client_host} </h1>"
+#if-statements
+@app.get("/if/{term}")
+def if_test(term: str):
+    msg = "Default msg"
+    if term == "hello" or term == "hi":
+        msg = "Hello! How are you?"
+    elif term == "hej":
+        msg = "Hej! Hur mår du?"
+    elif term == "moi":
+        msg = "Moika!"
+    else: 
+        msg = f"I don't understand {term}"
+    return {"msg": msg}
 
 @app.get("/items/{id}")
 def read_item(item_id: int, q: str = None):
