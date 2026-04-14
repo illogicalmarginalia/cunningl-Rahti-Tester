@@ -2,6 +2,8 @@ from fastapi import FastAPI, Request
 from fastapi.responses import HTMLResponse
 from fastapi.middleware.cors import CORSMiddleware
 from app.db import get_conn, create_schema
+from pydantic import BaseModel
+from datetime import date
 
 app = FastAPI()
 
@@ -22,6 +24,14 @@ app.add_middleware(
 )
 
 create_schema()
+
+#Create Pydantic Model
+class Booking(BaseModel):
+    guest_id: int
+    room_id: int
+    date_from: date
+    date_to: date
+    
 
 
 @app.get("/")
@@ -66,7 +76,40 @@ def read_root(request: Request):
                   {"roomNumber": 17, "bedSize" : "King", "TV" : "Yes", "Bookable":"No"}]
     return {"hotelRooms": hotelRooms}
 
+@app.get("/rooms/{id}")
+def get_one_room(id: int): 
+    with get_conn() as conn, conn.cursor() as cur:
+        cur.execute("""
+            SELECT * 
+            FROM rooms 
+            WHERE id = %s
+        """, (id,)) # <- tuple, list is also fine: [id]
+        room = cur.fetchone()
+    return room
+
+  
 #Create Booking
 @app.post("/api/bookings")
-def create_booking():
-    return {"msg": "Booking Created!"}
+def create_booking(booking: Booking):
+    with get_conn() as conn, conn.cursor() as cur:
+            cur.execute("""
+                INSERT INTO bookings (
+                    room_id, 
+                    guest_id,
+                    date_from,
+                    date_to
+                ) VALUES (
+                    %s, %s, %s, %s
+                ) RETURNING id
+            """, [
+                booking.room_id, 
+                booking.guest_id,
+                booking.date_from,
+                booking.date_to
+            ])
+            new_booking = cur.fetchone()
+            
+    return { 
+            "msg": "Booking created!", 
+            "id": new_booking['id']
+            }

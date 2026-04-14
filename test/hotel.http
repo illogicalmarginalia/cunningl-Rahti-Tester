@@ -1,4 +1,16 @@
 @hotelURL = http://127.0.0.1:8080/api/rooms
+@bookingURL = http://127.0.0.1:8080/api/bookings
 
 ###
 GET {{hotelURL}}
+
+###
+POST {{bookingURL}}
+Content-Type: application/json
+
+{
+    "room_id": 4,
+    "guest_id": 2,
+    "date_from": "2026-08-21",
+    "date_to": "2026-08-22"
+}
