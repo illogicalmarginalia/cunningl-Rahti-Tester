@@ -32,6 +32,7 @@ class Booking(BaseModel):
     room_id: int
     date_from: date
     date_to: date
+    addinfo: str
 
 
 @app.get("/")
@@ -74,13 +75,11 @@ def read_item(item_id: int, q: str = None):
 
 # View Rooms
 @app.get("/api/rooms")
-def read_root(request: Request):
-    hotelRooms = [
-        {"roomNumber": 14, "bedSize": "Queen", "TV": "Yes", "Bookable": "Yes"},
-        {"roomNumber": 7, "bedSize": "Twin", "TV": "No", "Bookable": "Yes"},
-        {"roomNumber": 17, "bedSize": "King", "TV": "Yes", "Bookable": "No"},
-    ]
-    return {"hotelRooms": hotelRooms}
+def get_rooms(): 
+    with get_conn() as conn, conn.cursor() as cur:
+        cur.execute("SELECT * FROM rooms")
+        rooms = cur.fetchall()
+    return rooms
 
 
 @app.get("/rooms/{id}")
@@ -108,12 +107,13 @@ def create_booking(booking: Booking):
                     room_id, 
                     guest_id,
                     date_from,
-                    date_to
+                    date_to,
+                    addinfo
                 ) VALUES (
-                    %s, %s, %s, %s
+                    %s, %s, %s, %s, %s
                 ) RETURNING id
             """,
-            [booking.room_id, booking.guest_id, booking.date_from, booking.date_to],
+            [booking.room_id, booking.guest_id, booking.date_from, booking.date_to, booking.addinfo],
         )
         new_booking = cur.fetchone()
 
