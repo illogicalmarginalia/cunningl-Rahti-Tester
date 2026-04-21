@@ -14,6 +14,8 @@ def create_schema():
         # Create the schema
         cur.execute(
             """
+            CREATE EXTENSION IF NOT EXISTS pgcrypto;
+
             CREATE TABLE IF NOT EXISTS rooms(
                 id SERIAL PRIMARY KEY, 
                 room_number INT NOT NULL,
@@ -38,7 +40,7 @@ def create_schema():
                 created_at TIMESTAMP DEFAULT CURRENT_TIME
             );
             
-            ALTER TABLE rooms ADD COLUMN IF NOT EXISTS room_type VARCHAR;
+            ALTER TABLE guests ADD COLUMN IF NOT EXISTS api_key VARCHAR DEFAULT encode(gen_random_bytes(32), 'hex');
         """
         )
         # add columns
