@@ -75,7 +75,7 @@ def read_item(item_id: int, q: str = None):
 
 # View Rooms
 @app.get("/api/rooms")
-def get_rooms(): 
+def get_rooms():
     with get_conn() as conn, conn.cursor() as cur:
         cur.execute("SELECT * FROM rooms")
         rooms = cur.fetchall()
@@ -97,6 +97,44 @@ def get_one_room(id: int):
     return room
 
 
+# Get Guests
+@app.get("/api/guests")
+def get_guests(): 
+    with get_conn() as conn, conn.cursor() as cur:
+        cur.execute("""
+            SELECT 
+                g.*,
+                (SELECT count(*) 
+                    FROM bookings
+                    WHERE guest_id = g.id
+                    ) as total_visits
+            FROM guests g    
+            ORDER BY g.lastname
+        """)
+        guests = cur.fetchall()
+    return guests
+
+
+# Get Booking
+@app.get("/api/bookings")
+def get_bookings():
+    with get_conn() as conn, conn.cursor() as cur:
+        cur.execute(
+            """SELECT
+                b.id, b.date_from, b.date_to, g.firstname, g.lastname, r.room_number,
+                b.date_to - b.date_from AS nights,
+                r.price * (b.date_to - b.date_from) AS total_price,
+                (SELECT count(*) FROM bookings WHERE guest_id = g.id) AS previous_visits
+            FROM bookings b
+            INNER JOIN guests g
+                ON b.guest_id = g.id
+            INNER JOIN rooms r
+                ON b.room_id = r.id"""
+        )
+        bookings = cur.fetchall()
+        return bookings
+
+
 # Create Booking
 @app.post("/api/bookings")
 def create_booking(booking: Booking):
@@ -113,7 +151,13 @@ def create_booking(booking: Booking):
                     %s, %s, %s, %s, %s
                 ) RETURNING id
             """,
-            [booking.room_id, booking.guest_id, booking.date_from, booking.date_to, booking.addinfo],
+            [
+                booking.room_id,
+                booking.guest_id,
+                booking.date_from,
+                booking.date_to,
+                booking.addinfo,
+            ],
         )
         new_booking = cur.fetchone()
 

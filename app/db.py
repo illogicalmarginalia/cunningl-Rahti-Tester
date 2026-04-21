@@ -39,7 +39,6 @@ def create_schema():
             );
             
             ALTER TABLE rooms ADD COLUMN IF NOT EXISTS room_type VARCHAR;
-                    
         """
         )
         # add columns
