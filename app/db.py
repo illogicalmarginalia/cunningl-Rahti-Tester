@@ -1,13 +1,12 @@
 import os, psycopg
 
+
 DATABASE_URL = os.getenv("DATABASE_URL")
-
-
+print(DATABASE_URL)
 def get_conn():
     return psycopg.connect(
         DATABASE_URL, autocommit=True, row_factory=psycopg.rows.dict_row
     )
-
 
 def create_schema():
     with get_conn() as conn, conn.cursor() as cur:

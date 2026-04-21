@@ -1,9 +1,11 @@
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, HTTPException, Depends, Request
 from fastapi.responses import HTMLResponse
+from fastapi.security import APIKeyHeader
 from fastapi.middleware.cors import CORSMiddleware
-from app.db import get_conn, create_schema
 from pydantic import BaseModel
 from datetime import date
+from app.db import get_conn, create_schema
+
 
 app = FastAPI()
 
@@ -25,6 +27,20 @@ app.add_middleware(
 
 create_schema()
 
+api_key_header = APIKeyHeader(name="X-API-Key", auto_error=False)
+
+def validate_key(api_key: str = Depends(api_key_header)):
+    if not api_key:
+        raise HTTPException(status_code=401, detail={"error": "API Key missing!"})
+    
+    with get_conn() as conn, conn.cursor() as cur:
+        cur.execute("""
+            SELECT * FROM guests WHERE api_key = %s
+        """, [api_key] )
+        guest = cur.fetchone()
+        if not guest:
+            raise HTTPException(status_code=401, detail={"error": "Bad API Key!"})
+        return guest
 
 # Create Pydantic Model
 class Booking(BaseModel):
@@ -117,7 +133,7 @@ def get_guests():
 
 # Get Booking
 @app.get("/api/bookings")
-def get_bookings():
+def get_bookings(guest: dict = Depends(validate_key)):
     with get_conn() as conn, conn.cursor() as cur:
         cur.execute(
             """SELECT
